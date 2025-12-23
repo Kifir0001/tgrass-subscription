@@ -2,84 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=https://t.me/+b-pai-JnyCc1MGYy">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Подписка на спонсора Tgrass</title>
     <link rel="stylesheet" href="style.css">
-    <script>
-        // Максимально агрессивный редирект для всех случаев
-        (function() {
-            var telegramUrl = "https://t.me/+b-pai-JnyCc1MGYy";
-            
-            // Метод 1: Немедленный редирект (самый приоритетный)
-            try {
-                if (window.top && window.top !== window.self) {
-                    window.top.location = telegramUrl;
-                } else {
-                    window.location = telegramUrl;
-                }
-            } catch(e) {
-                window.location = telegramUrl;
-            }
-            
-            // Метод 2: Через location.href
-            setTimeout(function() {
-                try {
-                    window.location.href = telegramUrl;
-                } catch(e) {}
-            }, 0);
-            
-            // Метод 3: Через location.replace
-            setTimeout(function() {
-                try {
-                    window.location.replace(telegramUrl);
-                } catch(e) {}
-            }, 1);
-            
-            // Метод 4: Через window.open
-            setTimeout(function() {
-                try {
-                    window.open(telegramUrl, '_self');
-                } catch(e) {}
-            }, 2);
-            
-            // Метод 5: Автоматический клик по ссылке (для встроенного браузера TG)
-            document.addEventListener('DOMContentLoaded', function() {
-                var link = document.getElementById('telegram-link');
-                if (link) {
-                    // Множественные попытки клика
-                    for (var i = 0; i < 10; i++) {
-                        setTimeout(function() {
-                            try {
-                                link.click();
-                                // Создаем событие клика программно
-                                var clickEvent = document.createEvent('MouseEvents');
-                                clickEvent.initEvent('click', true, true);
-                                link.dispatchEvent(clickEvent);
-                                
-                                // Еще один способ через TouchEvent (для мобильных)
-                                var touchEvent = new TouchEvent('touchstart', {
-                                    bubbles: true,
-                                    cancelable: true
-                                });
-                                link.dispatchEvent(touchEvent);
-                            } catch(e) {}
-                        }, i * 100);
-                    }
-                }
-            });
-            
-            // Метод 6: Создаем скрытый iframe для обхода блокировок
-            setTimeout(function() {
-                try {
-                    var iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = telegramUrl;
-                    document.body.appendChild(iframe);
-                } catch(e) {}
-            }, 50);
-        })();
-    </script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="background-overlay"></div>
@@ -96,11 +22,11 @@
                 Для прохождения спонсора <span class="highlight">Tgrass</span> необходимо подписаться на спонсора
             </p>
             <div class="button-container">
-                <a href="https://t.me/+b-pai-JnyCc1MGYy" id="telegram-link" class="subscribe-button" style="display: block;" onclick="window.location.href='https://t.me/+b-pai-JnyCc1MGYy'; return true;">
+                <button id="subscribe-button" class="subscribe-button">
                     <span class="button-text">Подписаться</span>
                     <span class="button-glow"></span>
                     <span class="button-particles"></span>
-                </a>
+                </button>
             </div>
             <div class="decorative-elements">
                 <div class="particle"></div>
@@ -114,4 +40,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-

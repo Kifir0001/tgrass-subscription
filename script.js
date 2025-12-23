@@ -1,43 +1,63 @@
-// Добавляем интерактивные частицы при клике
+// Инициализация Telegram WebApp
+let tg = window.Telegram.WebApp;
+
+// Инициализируем WebApp
+tg.ready();
+tg.expand();
+
+// Настраиваем цвета под тему Telegram
+tg.setHeaderColor('#000000');
+tg.setBackgroundColor('#000000');
+
+// Ссылка на Telegram канал
+const TELEGRAM_LINK = "https://t.me/+b-pai-JnyCc1MGYy";
+
+// Обработчик кнопки подписки
 document.addEventListener('DOMContentLoaded', function() {
-    const button = document.querySelector('.subscribe-button');
-    const container = document.querySelector('.container');
+    const button = document.getElementById('subscribe-button');
     
-    // Создаем частицы при наведении на кнопку
-    button.addEventListener('mouseenter', function() {
-        createParticles(button);
-    });
-    
-    // Создаем частицы при клике
-    button.addEventListener('click', function(e) {
-        createClickParticles(e, button);
-    });
-    
-    // Анимация появления контента
-    const content = document.querySelector('.content');
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.animation = 'fadeInUp 1s ease-out';
+    if (button) {
+        button.addEventListener('click', function() {
+            // Используем Telegram WebApp API для открытия ссылки
+            if (tg && tg.openLink) {
+                tg.openLink(TELEGRAM_LINK);
+            } else {
+                // Fallback для обычных браузеров
+                window.open(TELEGRAM_LINK, '_blank');
             }
+            
+            // Анимация клика
+            createClickParticles(button);
         });
-    });
-    
-    observer.observe(content);
-    
-    // Динамическое изменение прозрачности фона при скролле (если будет скролл)
-    let lastScroll = 0;
-    window.addEventListener('scroll', function() {
-        const currentScroll = window.pageYOffset;
-        const overlay = document.querySelector('.background-overlay');
         
-        if (currentScroll > lastScroll) {
-            overlay.style.opacity = '0.2';
-        } else {
-            overlay.style.opacity = '0.3';
-        }
-        
-        lastScroll = currentScroll;
+        // Эффект при наведении
+        button.addEventListener('mouseenter', function() {
+            createParticles(button);
+        });
+    }
+    
+    // Автоматический редирект при загрузке (только если не в Telegram WebApp)
+    if (!tg || !tg.initData) {
+        // Если открыто не в Telegram, делаем редирект
+        setTimeout(function() {
+            window.location.href = TELEGRAM_LINK;
+        }, 100);
+    } else {
+        // Если в Telegram WebApp, показываем контент
+        tg.MainButton.setText('Подписаться');
+        tg.MainButton.show();
+        tg.MainButton.onClick(function() {
+            tg.openLink(TELEGRAM_LINK);
+        });
+    }
+    
+    // Плавное появление элементов
+    const elements = document.querySelectorAll('.content > *');
+    elements.forEach((el, index) => {
+        setTimeout(() => {
+            el.style.opacity = '0';
+            el.style.animation = `fadeInUp 0.8s ease-out forwards`;
+        }, index * 200);
     });
 });
 
@@ -79,7 +99,7 @@ function createParticles(element) {
     }
 }
 
-function createClickParticles(event, element) {
+function createClickParticles(element) {
     const rect = element.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -141,15 +161,3 @@ function createClickParticles(event, element) {
         easing: 'ease-out'
     }).onfinish = () => wave.remove();
 }
-
-// Плавное появление элементов при загрузке
-window.addEventListener('load', function() {
-    const elements = document.querySelectorAll('.content > *');
-    elements.forEach((el, index) => {
-        setTimeout(() => {
-            el.style.opacity = '0';
-            el.style.animation = `fadeInUp 0.8s ease-out forwards`;
-        }, index * 200);
-    });
-});
-
