@@ -10,12 +10,14 @@ body {
     height: 100vh;
     height: 100dvh; /* Для мобильных устройств */
     position: relative;
-    background: #000;
+    background: #000 !important;
     /* Оптимизация для Telegram WebApp */
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+    /* Убираем серый фон */
+    background-color: #000 !important;
 }
 
 .background-overlay {
@@ -51,7 +53,9 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh; /* Для мобильных устройств */
     padding: 20px;
+    background: transparent;
 }
 
 .content {
