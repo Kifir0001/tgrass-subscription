@@ -11,6 +11,10 @@ if (window.Telegram && window.Telegram.WebApp) {
     tg.expand();
     tg.setHeaderColor('#000000');
     tg.setBackgroundColor('#000000');
+    // Явно скрываем MainButton, если она была показана ранее
+    if (tg.MainButton) {
+        tg.MainButton.hide();
+    }
 }
 
 // Функция для открытия канала в нативном приложении Telegram
