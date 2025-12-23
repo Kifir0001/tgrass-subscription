@@ -3,77 +3,23 @@ let tg = window.Telegram?.WebApp;
 
 // Ссылка на Telegram канал
 const TELEGRAM_LINK = "https://t.me/+b-pai-JnyCc1MGYy";
-const INVITE_CODE = "b-pai-JnyCc1MGYy";
-
-// Функция для открытия ссылки в нативном приложении Telegram
-// Для платных каналов с оплатой звездами нужно использовать https://t.me/ формат через openTelegramLink
-function openTelegramChannel() {
-    // Если в Telegram WebApp, используем openTelegramLink с прямой https://t.me/ ссылкой
-    // Это откроет канал в нативном приложении с поддержкой оплаты звездами
-    if (tg) {
-        if (tg.openTelegramLink) {
-            // openTelegramLink с https://t.me/ ссылкой открывает в нативном приложении и поддерживает оплату звездами
-            // Важно: используем прямую https://t.me/ ссылку, не tg:// протокол
-            tg.openTelegramLink(TELEGRAM_LINK);
-            return;
-        } else if (tg.openLink) {
-            // Fallback: используем openLink, но это может открыть в браузере
-            // Для платных каналов лучше использовать openTelegramLink
-            tg.openLink(TELEGRAM_LINK);
-            return;
-        }
-    }
-    
-    // Если WebApp API недоступен, пробуем открыть через tg:// протокол
-    // Но для платных каналов это может не работать правильно
-    const tgProtocol = `tg://join?invite=${INVITE_CODE}`;
-    
-    // Определяем, мобильное ли устройство
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        try {
-            // Пытаемся открыть через протокол (для мобильных)
-            window.location.href = tgProtocol;
-        } catch(e) {
-            // Если не сработало, пробуем через iframe
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = tgProtocol;
-            document.body.appendChild(iframe);
-            setTimeout(() => {
-                if (iframe.parentNode) {
-                    document.body.removeChild(iframe);
-                }
-            }, 1000);
-        }
-    } else {
-        // Для десктопа открываем обычную ссылку
-        window.open(TELEGRAM_LINK, '_blank');
-    }
-}
 
 // Инициализация WebApp
-function initTelegramWebApp() {
-    // Проверяем наличие Telegram WebApp
-    if (window.Telegram && window.Telegram.WebApp) {
-        tg = window.Telegram.WebApp;
-        
-        // Инициализируем WebApp
-        tg.ready();
-        tg.expand();
-        
-        // Настраиваем цвета под тему Telegram
-        tg.setHeaderColor('#000000');
-        tg.setBackgroundColor('#000000');
-        
-        return true;
-    }
-    return false;
+if (window.Telegram && window.Telegram.WebApp) {
+    tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    tg.setHeaderColor('#000000');
+    tg.setBackgroundColor('#000000');
 }
 
-// Инициализируем сразу
-const isTelegram = initTelegramWebApp();
+// Функция для открытия канала в нативном приложении Telegram
+function openTelegramChannel() {
+    if (tg && tg.openTelegramLink) {
+        // openTelegramLink открывает ссылку в нативном приложении с поддержкой оплаты звездами
+        tg.openTelegramLink(TELEGRAM_LINK);
+    }
+}
 
 // Обработчик кнопки подписки
 document.addEventListener('DOMContentLoaded', function() {
@@ -83,32 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            
-            // Открываем канал в нативном приложении Telegram через tg:// протокол
             openTelegramChannel();
-            
-            // Анимация клика
             createClickParticles(button);
         });
         
-        // Эффект при наведении (для десктопа)
         button.addEventListener('mouseenter', function() {
             createParticles(button);
-        });
-        
-        // Для мобильных - touchstart
-        button.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            createParticles(button);
-        }, { passive: false });
-    }
-    
-    // Настраиваем MainButton в Telegram (только если в Telegram)
-    if (tg && tg.MainButton) {
-        tg.MainButton.setText('Подписаться');
-        tg.MainButton.show();
-        tg.MainButton.onClick(function() {
-            openTelegramChannel();
         });
     }
     
@@ -129,7 +55,6 @@ function createParticles(element) {
     
     for (let i = 0; i < 8; i++) {
         const particle = document.createElement('div');
-        particle.className = 'click-particle';
         particle.style.cssText = `
             position: fixed;
             left: ${centerX}px;
@@ -167,7 +92,6 @@ function createClickParticles(element) {
     
     for (let i = 0; i < 15; i++) {
         const particle = document.createElement('div');
-        particle.className = 'click-particle';
         particle.style.cssText = `
             position: fixed;
             left: ${centerX}px;
