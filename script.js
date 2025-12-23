@@ -3,63 +3,34 @@ let tg = window.Telegram?.WebApp;
 
 // Ссылка на Telegram канал
 const TELEGRAM_LINK = "https://t.me/+b-pai-JnyCc1MGYy";
+const INVITE_CODE = "b-pai-JnyCc1MGYy";
 
-// Функция для открытия ссылки в нативном приложении Telegram
+// Функция для открытия ссылки в нативном приложении Telegram через tg:// протокол
 function openTelegramChannel() {
-    // Если в Telegram WebApp, используем openTelegramLink для открытия в приложении
-    // openTelegramLink открывает ссылку прямо в приложении Telegram (поддерживает оплату звездами)
-    if (tg) {
-        if (tg.openTelegramLink) {
-            // Это правильный метод для открытия в нативном приложении
-            tg.openTelegramLink(TELEGRAM_LINK);
-            return true;
-        } else if (tg.openLink) {
-            // Fallback - но это откроет в браузере, не в приложении
-            // Пытаемся использовать tg:// протокол для мобильных
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            if (isMobile) {
-                // Для invite ссылок используем специальный формат
-                const inviteCode = TELEGRAM_LINK.replace('https://t.me/+', '');
-                const tgProtocol = `tg://join?invite=${inviteCode}`;
-                
-                // Пытаемся открыть через протокол
-                window.location.href = tgProtocol;
-                
-                // Если не сработало через 300ms, пробуем обычную ссылку
-                setTimeout(() => {
-                    if (document.hasFocus && !document.hasFocus()) {
-                        // Если фокус не вернулся, значит протокол не сработал
-                        tg.openLink(TELEGRAM_LINK);
-                    }
-                }, 300);
-            } else {
-                tg.openLink(TELEGRAM_LINK);
-            }
-            return true;
-        }
+    // Всегда используем tg:// протокол для открытия в приложении
+    const tgProtocol = `tg://join?invite=${INVITE_CODE}`;
+    
+    // Если в Telegram WebApp, используем openTelegramLink
+    if (tg && tg.openTelegramLink) {
+        // openTelegramLink открывает ссылку прямо в приложении Telegram (поддерживает оплату звездами)
+        tg.openTelegramLink(tgProtocol);
+        return;
     }
     
-    // Если не в Telegram WebApp, пытаемся открыть через tg:// протокол
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (isMobile) {
-        const inviteCode = TELEGRAM_LINK.replace('https://t.me/+', '');
-        const tgProtocol = `tg://join?invite=${inviteCode}`;
-        
-        try {
-            window.location.href = tgProtocol;
-            setTimeout(() => {
-                window.open(TELEGRAM_LINK, '_blank');
-            }, 500);
-        } catch(e) {
-            window.open(TELEGRAM_LINK, '_blank');
-        }
-    } else {
-        window.open(TELEGRAM_LINK, '_blank');
+    // Если openTelegramLink недоступен, используем прямой протокол
+    // Это откроет ссылку в нативном приложении Telegram на мобильных
+    try {
+        window.location.href = tgProtocol;
+    } catch(e) {
+        // Если не сработало, пробуем через iframe (для некоторых браузеров)
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = tgProtocol;
+        document.body.appendChild(iframe);
+        setTimeout(() => {
+            document.body.removeChild(iframe);
+        }, 1000);
     }
-    
-    return false;
 }
 
 // Инициализация WebApp
@@ -93,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             
-            // Открываем канал в нативном приложении Telegram
+            // Открываем канал в нативном приложении Telegram через tg:// протокол
             openTelegramChannel();
             
             // Анимация клика
