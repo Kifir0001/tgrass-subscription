@@ -1,30 +1,39 @@
 // Инициализация Telegram WebApp
-let tg = window.Telegram.WebApp;
+let tg = window.Telegram?.WebApp;
 
-// Инициализируем WebApp
-tg.ready();
-tg.expand();
-
-// Настраиваем цвета под тему Telegram
-tg.setHeaderColor('#000000');
-tg.setBackgroundColor('#000000');
+// Проверяем, что мы в Telegram WebApp
+if (tg && tg.initData) {
+    // Инициализируем WebApp только если открыто в Telegram
+    tg.ready();
+    tg.expand();
+    
+    // Настраиваем цвета под тему Telegram
+    tg.setHeaderColor('#000000');
+    tg.setBackgroundColor('#000000');
+    
+    // Включаем вибрацию при клике
+    tg.enableClosingConfirmation();
+} else {
+    // Если открыто не в Telegram, показываем сообщение
+    document.body.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white; text-align: center; padding: 20px;"><div><h1>Это приложение работает только в Telegram</h1><p>Откройте через бота: t.me/tgrasssponsor_bot</p></div></div>';
+}
 
 // Ссылка на Telegram канал
 const TELEGRAM_LINK = "https://t.me/+b-pai-JnyCc1MGYy";
 
 // Обработчик кнопки подписки
 document.addEventListener('DOMContentLoaded', function() {
+    // Работаем только если в Telegram WebApp
+    if (!tg || !tg.initData) {
+        return;
+    }
+    
     const button = document.getElementById('subscribe-button');
     
     if (button) {
         button.addEventListener('click', function() {
             // Используем Telegram WebApp API для открытия ссылки
-            if (tg && tg.openLink) {
-                tg.openLink(TELEGRAM_LINK);
-            } else {
-                // Fallback для обычных браузеров
-                window.open(TELEGRAM_LINK, '_blank');
-            }
+            tg.openLink(TELEGRAM_LINK);
             
             // Анимация клика
             createClickParticles(button);
@@ -36,20 +45,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Автоматический редирект при загрузке (только если не в Telegram WebApp)
-    if (!tg || !tg.initData) {
-        // Если открыто не в Telegram, делаем редирект
-        setTimeout(function() {
-            window.location.href = TELEGRAM_LINK;
-        }, 100);
-    } else {
-        // Если в Telegram WebApp, показываем контент
-        tg.MainButton.setText('Подписаться');
-        tg.MainButton.show();
-        tg.MainButton.onClick(function() {
-            tg.openLink(TELEGRAM_LINK);
-        });
-    }
+    // Настраиваем MainButton в Telegram
+    tg.MainButton.setText('Подписаться');
+    tg.MainButton.show();
+    tg.MainButton.onClick(function() {
+        tg.openLink(TELEGRAM_LINK);
+    });
     
     // Плавное появление элементов
     const elements = document.querySelectorAll('.content > *');
