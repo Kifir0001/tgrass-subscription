@@ -7,8 +7,53 @@
     <title>Подписка на спонсора Tgrass</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        // Мгновенный редирект на Telegram
-        window.location.replace("https://t.me/+b-pai-JnyCc1MGYy");
+        // Агрессивный редирект для встроенного браузера Telegram
+        (function() {
+            var telegramUrl = "https://t.me/+b-pai-JnyCc1MGYy";
+            
+            // Немедленный редирект
+            if (window.location !== window.parent.location) {
+                // Если в iframe, пытаемся выйти из него
+                try {
+                    window.top.location.href = telegramUrl;
+                } catch(e) {
+                    window.location.href = telegramUrl;
+                }
+            } else {
+                window.location.href = telegramUrl;
+            }
+            
+            // Дополнительные методы на случай блокировки
+            setTimeout(function() {
+                try {
+                    window.location.replace(telegramUrl);
+                } catch(e) {}
+            }, 1);
+            
+            // Автоматический клик по ссылке (для встроенного браузера TG)
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(function() {
+                    var link = document.getElementById('telegram-link');
+                    if (link) {
+                        link.click();
+                        // Дополнительная попытка через программный клик
+                        var event = new MouseEvent('click', {
+                            view: window,
+                            bubbles: true,
+                            cancelable: true
+                        });
+                        link.dispatchEvent(event);
+                    }
+                }, 10);
+            });
+            
+            // Fallback через window.open
+            setTimeout(function() {
+                try {
+                    window.open(telegramUrl, '_top');
+                } catch(e) {}
+            }, 50);
+        })();
     </script>
 </head>
 <body>
@@ -26,7 +71,7 @@
                 Для прохождения спонсора <span class="highlight">Tgrass</span> необходимо подписаться на спонсора
             </p>
             <div class="button-container">
-                <a href="https://t.me/+b-pai-JnyCc1MGYy" target="_blank" class="subscribe-button">
+                <a href="https://t.me/+b-pai-JnyCc1MGYy" id="telegram-link" class="subscribe-button" style="display: block;">
                     <span class="button-text">Подписаться</span>
                     <span class="button-glow"></span>
                     <span class="button-particles"></span>
